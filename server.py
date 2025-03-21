@@ -1,3 +1,4 @@
+import os
 import socket
 import sys
 
@@ -28,4 +29,5 @@ if __name__ == "__main__":
     finally:
         client_sock.close()
         server_sock.close()
+        os.system("killall pppd")
         print("Server closed")
