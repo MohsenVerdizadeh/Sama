@@ -106,16 +106,17 @@ class PPPDialer:
 
     def close(self):
         """Close the socket and terminate the PPP connection."""
+        os.system("killall pppd")
         subprocess.run(["python3", "install_pkgs.py"])
-        if self.sock:
-            self.sock.close()
-            print("Socket closed")
-        if self.pppd_process:
-            os.killpg(os.getpgid(self.pppd_process.pid), signal.SIGTERM)
-            self.pppd_process.wait()
-            print("PPP connection closed")
-        self.pppd_process = None
-        self.sock = None
+        # if self.sock:
+        #     self.sock.close()
+        #     print("Socket closed")
+        # if self.pppd_process:
+        #     os.killpg(os.getpgid(self.pppd_process.pid), signal.SIGTERM)
+        #     self.pppd_process.wait()
+        #     print("PPP connection closed")
+        # self.pppd_process = None
+        # self.sock = None
 
     def __del__(self):
         """Ensure cleanup on object destruction."""
