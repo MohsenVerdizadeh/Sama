@@ -103,7 +103,7 @@ def setup_configs():
     # Check if this is ppp0 coming up
 if [ "$1" = "ppp0" ]; then
     # Path to your ppp_server.py
-    SERVER_SCRIPT="{current_directory}/ppp_server.py"
+    SERVER_SCRIPT="{current_directory}/server.py"
     # Run the Python script in the background
     /usr/bin/python3 "$SERVER_SCRIPT" &>> /var/log/ppp_server.log &
 fi

@@ -1,33 +1,28 @@
-from PyQt6.QtSerialPort import QSerialPort
-from PyQt6.QtCore import QIODevice, QTimer
-from PyQt6.QtWidgets import QApplication
-import sys
-
-class Dialer:
-    def __init__(self, port_name="COM4", baud_rate=9600, phone_number="09190868330"):
-        self.serial = QSerialPort()
-        self.serial.setPortName(port_name)
-        self.serial.setBaudRate(baud_rate)
-        self.serial.readyRead.connect(self.read_response)
-
-        if self.serial.open(QIODevice.OpenModeFlag.ReadWrite):
-            print(f"Connected to {port_name}")
-            self.dial(phone_number)
-        else:
-            print("Failed to open serial port")
-
-    def dial(self, number):
-        """Dial a phone number using AT commands."""
-        command = f"ATD{number};\r"
-        self.serial.write(command.encode())
-        print(f"Dialing {number}...")
-
-    def read_response(self):
-        """Read responses from the modem."""
-        response = self.serial.readAll().data().decode().strip()
-        print("Modem Response:", response)
+from client import PPPDialer
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    dialer = Dialer(port_name="COM3", phone_number="123456789")
-    sys.exit(app.exec())
+    dialer = PPPDialer()
+    try:
+        # Dial and establish PPP connection
+        dialer.start_connection()
+
+        # Get a socket for communication
+        sock = dialer.get_socket(port=12345)
+
+        # Use the socket to send data
+        message = "Hello over PPP from the library!"
+        sock.send(message.encode())
+        print(f"Sent: {message}")
+
+        # Example: Send a file
+        with open("sample.txt", "rb") as f:
+            while (data := f.read(1024)):
+                sock.send(data)
+        print("File sent")
+
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        # Clean up
+        dialer.close()
+
