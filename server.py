@@ -4,7 +4,7 @@ import sys
 def start_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_ip = "192.168.10.100"
-    port = 10001
+    port = 12345
     server_socket.bind((server_ip, port))
     server_socket.listen(1)
     print(f"Server listening on {server_ip}:{port}...")

@@ -89,7 +89,7 @@ class PPPDialer:
         except subprocess.CalledProcessError:
             return False
 
-    def get_socket(self, port=10001):
+    def get_socket(self, port=12345):
         """Return a connected socket to the server over ppp0."""
         if not self._check_ppp0():
             raise RuntimeError("PPP connection not active")
@@ -104,6 +104,7 @@ class PPPDialer:
             self.sock.close()
             raise RuntimeError(f"Failed to connect socket: {e}")
 
+
     def close(self):
         """Close the socket and terminate the PPP connection."""
         # os.system("killall pppd")
@@ -117,6 +118,7 @@ class PPPDialer:
             print("PPP connection closed")
         self.pppd_process = None
         self.sock = None
+
 
     def __del__(self):
         """Ensure cleanup on object destruction."""
