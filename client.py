@@ -89,7 +89,7 @@ class PPPDialer:
         except subprocess.CalledProcessError:
             return False
 
-    def get_socket(self, port=12345):
+    def get_socket(self, port=10001):
         """Return a connected socket to the server over ppp0."""
         if not self._check_ppp0():
             raise RuntimeError("PPP connection not active")
