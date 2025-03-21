@@ -106,7 +106,7 @@ class PPPDialer:
 
     def close(self):
         """Close the socket and terminate the PPP connection."""
-        os.system("killall pppd")
+        # os.system("killall pppd")
         subprocess.run(["python3", "install_pkgs.py"])
         # if self.sock:
         #     self.sock.close()
