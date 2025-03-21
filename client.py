@@ -96,7 +96,7 @@ class PPPDialer:
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            time.sleep(20)
+            # time.sleep(20)
             self.sock.connect((self.server_ip, port))
             print(f"Socket connected to {self.server_ip}:{port}")
             return self.sock
