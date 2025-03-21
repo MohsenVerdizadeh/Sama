@@ -29,7 +29,7 @@ def install_package(package):
 
     print(f"Installing '{package}'...")
     try:
-        subprocess.check_call(["apt", "install", "-y", package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.check_call(["apt", "install", package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(f"'{package}' installed successfully.")
     except subprocess.CalledProcessError as e:
         print(f"Failed to install '{package}': {e}")
@@ -80,6 +80,25 @@ def setup_configs():
     with open(mgetty_path + "mgetty.config", "w") as f:
         f.write(mgetty_config_content.strip())
 
+    mgetty_service_content = f"""
+[Unit]
+Description=Modem getty
+After=network.target
+
+[Service]
+ExecStart=/sbin/mgetty -s {db.baud_rate} -D {db.modem_path}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+            """
+    with open("/etc/systemd/system/mgetty.service", "w") as f:
+        f.write(mgetty_service_content.strip())
+
+    os.system("sudo systemctl daemon-reload")
+    os.system("sudo systemctl enable --now mgetty")
+
     pppd_path = "/etc/ppp/"
 
     chap_secrets_content = f"{db.client_username} * {db.client_password} {db.client_ip}"
@@ -99,7 +118,7 @@ def setup_configs():
 
     current_directory = os.getcwd()
 
-    ip_up_content=f"""
+    ip_up_content = f"""
     # Check if this is ppp0 coming up
 if [ "$1" = "ppp0" ]; then
     # Path to your ppp_server.py
@@ -108,12 +127,13 @@ if [ "$1" = "ppp0" ]; then
     /usr/bin/python3 "$SERVER_SCRIPT" &>> /var/log/ppp_server.log &
 fi
     """
-    with open(pppd_path+"ip-up","a")as file:
+    with open(pppd_path + "ip-up", "a") as file:
         file.write(ip_up_content)
 
     os.system("sudo touch /var/log/ppp_server.log")
     os.system("sudo chmod 640 /var/log/ppp_server.log")
     os.system("sudo chown root:adm /var/log/ppp_server.log")
+
 
 if __name__ == "__main__":
     check_root()
