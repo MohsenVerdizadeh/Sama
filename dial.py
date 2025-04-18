@@ -97,13 +97,13 @@ class PPPDialer:
         with open(self.pppd_path + "peers/dialout", "w") as f:
             f.write(dial_out_content.strip())
 
-    def dial_in(self,server_ip="192.168.10.100", port=12345):
+    def dial_in(self, server_ip="192.168.10.100", port=12345):
         logging.info("Start dial in setup configs")
         self.dial_in_setup_configs()
         logging.info("Finish dial in setup configs")
 
+        logging.info("Waiting for dial in ....")
         while True:
-            logging.info("Waiting for dial in ....")
             if self._check_ppp0():
                 try:
                     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
