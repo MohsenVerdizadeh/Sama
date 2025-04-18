@@ -6,12 +6,14 @@ import os
 import signal
 import db
 
+
 def setup_logging(log_file="/var/log/dial.log"):
     logging.basicConfig(
         filename=log_file,
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
     )
+
 
 class PPPDialer:
     def __init__(self, device=db.modem_path, baud=db.baud_rate, server_ip=db.server_ip,
@@ -133,17 +135,17 @@ class PPPDialer:
 
 def get_socket(phone_number=db.phone_number):
     dialer = PPPDialer(phone_number=phone_number)
-    try:
-        # Dial and establish PPP connection
-        dialer.dial_out()
+    # try:
+    # Dial and establish PPP connection
+    dialer.dial_out()
 
-        # Get a socket for communication
-        sock = dialer.get_socket(port=12345)
+    # Get a socket for communication
+    sock = dialer.get_socket(port=12345)
 
-        return sock
+    return sock
 
-    except Exception as e:
-        logging.error(f"Error: {e}")
-    finally:
-        # Clean up
-        dialer.close()
+# except Exception as e:
+#     logging.error(f"Error: {e}")
+# finally:
+#     # Clean up
+#     dialer.close()
