@@ -33,12 +33,12 @@ def main():
     client_sock, server_sock = start_server()
 
     try:
-        with open("data.txt", "a") as file:
+        with open("data.txt", "w") as file:
             while True:
                 data = client_sock.recv(1024)
                 if not data:
                     break
-                file.write(data.decode())
+                file.write(data.decode().strip())
     except Exception as e:
         print(f"Error during communication: {e}")
     finally:
