@@ -29,7 +29,7 @@ class PPPDialer:
         self.sock = None
         setup_logging()
 
-    def dial_out(self):
+    def start_connection(self):
         """Dial the server and establish the PPP connection."""
         # Ensure chat script exists
         subprocess.run(["python3", "check_dependencies.py"])
@@ -135,17 +135,10 @@ class PPPDialer:
 
 def get_socket(phone_number=db.phone_number):
     dialer = PPPDialer(phone_number=phone_number)
-    # try:
     # Dial and establish PPP connection
-    dialer.dial_out()
+    dialer.start_connection()
 
     # Get a socket for communication
     sock = dialer.get_socket(port=12345)
 
     return sock
-
-# except Exception as e:
-#     logging.error(f"Error: {e}")
-# finally:
-#     # Clean up
-#     dialer.close()
