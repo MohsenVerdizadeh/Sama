@@ -4,7 +4,7 @@ import sys
 import logging
 
 
-def setup_logging(log_file="/var/log/ppp_server.log"):
+def setup_logging(log_file="/var/log/dial.log"):
     logging.basicConfig(
         filename=log_file,
         level=logging.INFO,
@@ -33,13 +33,14 @@ def main():
     client_sock, server_sock = start_server()
 
     try:
-        while True:
-            data = client_sock.recv(1024)
-            if not data:
-                break
-            logging.info(f"Received: {data.decode().strip()}")
+        with open("data.txt", "a") as file:
+            while True:
+                data = client_sock.recv(1024)
+                if not data:
+                    break
+                file.write(data.decode())
     except Exception as e:
-        logging.error(f"Error during communication: {e}")
+        print(f"Error during communication: {e}")
     finally:
         client_sock.close()
         server_sock.close()

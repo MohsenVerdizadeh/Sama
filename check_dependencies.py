@@ -1,14 +1,21 @@
 import subprocess
 import sys
 import os
-
+import logging
 import db
 
+
+def setup_logging(log_file="/var/log/dial.log"):
+    logging.basicConfig(
+        filename=log_file,
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
 
 def check_root():
     """Ensure the script runs with root privileges."""
     if os.geteuid() != 0:
-        print("This script requires root privileges. Please run with sudo.")
+        logging.info("This script requires root privileges. Please run with sudo.")
         sys.exit(1)
 
 
@@ -24,34 +31,27 @@ def is_package_installed(package):
 def install_package(package):
     """Install a specified package if not already installed."""
     if is_package_installed(package):
-        print(f"'{package}' is already installed.")
+        logging.info(f"'{package}' is already installed.")
         return
 
-    print(f"Installing '{package}'...")
+    logging.info(f"Installing '{package}'...")
     try:
         subprocess.check_call(["apt", "install", package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print(f"'{package}' installed successfully.")
+        logging.info(f"'{package}' installed successfully.")
     except subprocess.CalledProcessError as e:
-        print(f"Failed to install '{package}': {e}")
+        logging.info(f"Failed to install '{package}': {e}")
         sys.exit(1)
 
     # Verify installation
     if is_package_installed(package):
-        print(f"Verification: '{package}' is installed.")
+        logging.info(f"Verification: '{package}' is installed.")
     else:
-        print(f"Verification failed: '{package}' not installed.")
+        logging.info(f"Verification failed: '{package}' not installed.")
         sys.exit(1)
 
 
-def install_ppp_tools():
+def install_tools():
     """Install both ppp (pppd) and mgetty."""
-    # # Update package list
-    # print("Updating package list...")
-    # try:
-    #     subprocess.check_call(["apt", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # except subprocess.CalledProcessError as e:
-    #     print(f"Failed to update package list: {e}")
-    #     sys.exit(1)
 
     # Install ppp (includes pppd and chat)
     install_package("ppp")
@@ -124,18 +124,19 @@ if [ "$1" = "ppp0" ]; then
     # Path to your ppp_server.py
     SERVER_SCRIPT="{current_directory}/server.py"
     # Run the Python script in the background
-    /usr/bin/python3 "$SERVER_SCRIPT" &>> /var/log/ppp_server.log &
+    /usr/bin/python3 "$SERVER_SCRIPT" &>> /var/log/dial/server.log &
 fi
     """
     with open(pppd_path + "ip-up", "a") as file:
         file.write(ip_up_content)
 
-    os.system("sudo touch /var/log/ppp_server.log")
-    os.system("sudo chmod 640 /var/log/ppp_server.log")
-    os.system("sudo chown root:adm /var/log/ppp_server.log")
+    os.system("sudo touch /var/log/dial/server.log")
+    os.system("sudo chmod 640 /var/log/dial/server.log")
+    os.system("sudo chown root:adm //var/log/dial/server.log")
 
 
 if __name__ == "__main__":
+    setup_logging()
     check_root()
-    install_ppp_tools()
+    install_tools()
     setup_configs()

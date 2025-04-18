@@ -19,15 +19,15 @@ class PPPDialer:
         self.pppd_process = None
         self.sock = None
 
-    def start_connection(self):
+    def dial_out(self):
         """Dial the server and establish the PPP connection."""
         # Ensure chat script exists
-        subprocess.run(["python3", "install_pkgs.py"])
+        subprocess.run(["python3", "check_dependencies.py"])
         self._setup_configs()
 
         # Run pppd to dial
         pppd_cmd = [
-             "pppd", "call", "dialout"
+            "pppd", "call", "dialout"
         ]
         try:
             self.pppd_process = subprocess.Popen(pppd_cmd, preexec_fn=os.setsid)
@@ -104,11 +104,10 @@ class PPPDialer:
             self.sock.close()
             raise RuntimeError(f"Failed to connect socket: {e}")
 
-
     def close(self):
         """Close the socket and terminate the PPP connection."""
         # os.system("killall pppd")
-        subprocess.run(["python3", "install_pkgs.py"])
+        subprocess.run(["python3", "check_dependencies.py"])
         if self.sock:
             self.sock.close()
             print("Socket closed")
@@ -119,7 +118,24 @@ class PPPDialer:
         self.pppd_process = None
         self.sock = None
 
-
     def __del__(self):
         """Ensure cleanup on object destruction."""
         self.close()
+
+
+def get_socket(phone_number=db.phone_number):
+    dialer = PPPDialer(phone_number=phone_number)
+    try:
+        # Dial and establish PPP connection
+        dialer.dial_out()
+
+        # Get a socket for communication
+        sock = dialer.get_socket(port=12345)
+
+        return sock
+
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        # Clean up
+        dialer.close()
