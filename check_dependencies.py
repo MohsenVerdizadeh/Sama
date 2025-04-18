@@ -99,22 +99,22 @@ WantedBy=multi-user.target
     os.system("sudo systemctl daemon-reload")
     os.system("sudo systemctl enable --now mgetty")
 
-    pppd_path = "/etc/ppp/"
-
-    chap_secrets_content = f"{db.client_username} * {db.client_password} {db.client_ip}"
-    with open(pppd_path + "chap-secrets", "w") as f:
-        f.write(chap_secrets_content.strip())
-
-    options_content = f"""
-            auth          # Require authentication
-            +chap         # Use CHAP
-            -pap          # Disable PAP
-            lock          # Lock the serial device
-            {db.server_ip}:{db.client_ip}  # Server:Client IPs
-            debug         # Enable detailed logging
-            """
-    with open(pppd_path + "options", "w") as f:
-        f.write(options_content.strip())
+    # pppd_path = "/etc/ppp/"
+    #
+    # chap_secrets_content = f"{db.client_username} * {db.client_password} {db.client_ip}"
+    # with open(pppd_path + "chap-secrets", "w") as f:
+    #     f.write(chap_secrets_content.strip())
+    #
+    # options_content = f"""
+    #         auth          # Require authentication
+    #         +chap         # Use CHAP
+    #         -pap          # Disable PAP
+    #         lock          # Lock the serial device
+    #         {db.server_ip}:{db.client_ip}  # Server:Client IPs
+    #         debug         # Enable detailed logging
+    #         """
+    # with open(pppd_path + "options", "w") as f:
+    #     f.write(options_content.strip())
 
 #     current_directory = os.getcwd()
 #
@@ -139,4 +139,5 @@ if __name__ == "__main__":
     setup_logging()
     check_root()
     install_tools()
+    logging.info("Start setup some global configs")
     setup_configs()

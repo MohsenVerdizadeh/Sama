@@ -33,11 +33,13 @@ class PPPDialer:
     def dial_out(self):
         """Dial the server and establish the PPP connection."""
 
-        logging.info("Checking dependencies")
+        logging.info("Start Checking dependencies")
         subprocess.run(["python3", "check_dependencies.py"])
+        logging.info("Finish Checking dependencies")
 
         logging.info("Start dial out setup configs")
         self.dial_out_setup_configs()
+        logging.info("Finish dial out setup configs")
 
         # Run pppd to dial
         pppd_cmd = [
@@ -96,8 +98,12 @@ class PPPDialer:
             f.write(dial_out_content.strip())
 
     def dial_in(self,server_ip="192.168.10.100", port=12345):
+        logging.info("Start dial in setup configs")
         self.dial_in_setup_configs()
+        logging.info("Finish dial in setup configs")
+
         while True:
+            logging.info("Waiting for dial in ....")
             if self._check_ppp0():
                 try:
                     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
