@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import socket
 import time
@@ -5,6 +6,12 @@ import os
 import signal
 import db
 
+def setup_logging(log_file="/var/log/dial.log"):
+    logging.basicConfig(
+        filename=log_file,
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
 
 class PPPDialer:
     def __init__(self, device=db.modem_path, baud=db.baud_rate, server_ip=db.server_ip,
@@ -18,6 +25,7 @@ class PPPDialer:
         self.pppd_path = "/etc/ppp/"
         self.pppd_process = None
         self.sock = None
+        setup_logging()
 
     def dial_out(self):
         """Dial the server and establish the PPP connection."""
@@ -31,17 +39,17 @@ class PPPDialer:
         ]
         try:
             self.pppd_process = subprocess.Popen(pppd_cmd, preexec_fn=os.setsid)
-            print("Dialing... Waiting for PPP connection.")
+            logging.info("Dialing... Waiting for PPP connection.")
         except Exception as e:
-            raise RuntimeError(f"Failed to start pppd: {e}")
+            raise logging.error(f"Failed to start pppd: {e}")
 
         # Wait for ppp0 to come up
         for _ in range(40):  # Timeout after 30 seconds
             if self._check_ppp0():
-                print("PPP connection established on ppp0")
+                logging.info("PPP connection established on ppp0")
                 return True
             time.sleep(1)
-        raise RuntimeError("PPP connection failed to establish")
+        raise logging.error("PPP connection failed to establish")
 
     def _setup_configs(self):
         """Create or verify the chat script."""
@@ -92,17 +100,17 @@ class PPPDialer:
     def get_socket(self, port=12345):
         """Return a connected socket to the server over ppp0."""
         if not self._check_ppp0():
-            raise RuntimeError("PPP connection not active")
+            raise logging.error("PPP connection not active")
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             # time.sleep(20)
             self.sock.connect((self.server_ip, port))
-            print(f"Socket connected to {self.server_ip}:{port}")
+            logging.info(f"Socket connected to {self.server_ip}:{port}")
             return self.sock
         except Exception as e:
             self.sock.close()
-            raise RuntimeError(f"Failed to connect socket: {e}")
+            raise logging.error(f"Failed to connect socket: {e}")
 
     def close(self):
         """Close the socket and terminate the PPP connection."""
@@ -110,11 +118,11 @@ class PPPDialer:
         subprocess.run(["python3", "check_dependencies.py"])
         if self.sock:
             self.sock.close()
-            print("Socket closed")
+            logging.info("Socket closed")
         if self.pppd_process:
             os.killpg(os.getpgid(self.pppd_process.pid), signal.SIGTERM)
             self.pppd_process.wait()
-            print("PPP connection closed")
+            logging.info("PPP connection closed")
         self.pppd_process = None
         self.sock = None
 
@@ -135,7 +143,7 @@ def get_socket(phone_number=db.phone_number):
         return sock
 
     except Exception as e:
-        print(f"Error: {e}")
+        logging.error(f"Error: {e}")
     finally:
         # Clean up
         dialer.close()

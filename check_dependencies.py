@@ -124,15 +124,15 @@ if [ "$1" = "ppp0" ]; then
     # Path to your ppp_server.py
     SERVER_SCRIPT="{current_directory}/server.py"
     # Run the Python script in the background
-    /usr/bin/python3 "$SERVER_SCRIPT" &>> /var/log/dial/server.log &
+    /usr/bin/python3 "$SERVER_SCRIPT" &
 fi
     """
     with open(pppd_path + "ip-up", "a") as file:
         file.write(ip_up_content)
 
-    os.system("sudo touch /var/log/dial/server.log")
-    os.system("sudo chmod 640 /var/log/dial/server.log")
-    os.system("sudo chown root:adm //var/log/dial/server.log")
+    # os.system("sudo touch /var/log/dial/server.log")
+    # os.system("sudo chmod 640 /var/log/dial/server.log")
+    # os.system("sudo chown root:adm //var/log/dial/server.log")
 
 
 if __name__ == "__main__":
