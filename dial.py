@@ -32,8 +32,11 @@ class PPPDialer:
 
     def dial_out(self):
         """Dial the server and establish the PPP connection."""
-        # Ensure chat script exists
+
+        logging.info("Checking dependencies")
         subprocess.run(["python3", "check_dependencies.py"])
+
+        logging.info("Start dial out setup configs")
         self.dial_out_setup_configs()
 
         # Run pppd to dial
@@ -131,7 +134,7 @@ class PPPDialer:
     def _check_ppp0(self):
         """Check if ppp0 interface is up with the correct IP."""
         try:
-            output = subprocess.check_output(["ip", "addr", "show", "ppp0"]).decode()
+            output = subprocess.check_output(["ip", "addr", "show", "ppp0"], stderr=subprocess.DEVNULL).decode()
             return self.client_ip in output
         except subprocess.CalledProcessError:
             return False
