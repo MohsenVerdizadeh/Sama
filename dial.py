@@ -65,17 +65,6 @@ class PPPDialer:
                 ABORT BUSY
                 ABORT "NO CARRIER"
                 "" ATZ
-                OK ATE1
-                OK ATS0=1
-                OK ATS6=1
-                OK ATS7=30
-                OK ATS8=1
-                OK AT$F=1
-                OK AT+PSS=1
-                OK AT-QCPS=1
-                OK ATX0
-                OK AT+IPR={self.baud}
-                OK AT&W
                 OK ATDT{self.phone_number}
                 CONNECT ""
         """
