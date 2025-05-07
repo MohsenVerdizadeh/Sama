@@ -62,11 +62,22 @@ class PPPDialer:
     def dial_out_setup_configs(self):
         """Create or verify the chat script."""
         script_content = f"""
-        ABORT BUSY
-        ABORT "NO CARRIER"
-        "" ATZ
-        OK ATDT{self.phone_number}
-        CONNECT ""
+                ABORT BUSY
+                ABORT "NO CARRIER"
+                "" ATZ
+                OK ATE1
+                OK ATS0=1
+                OK ATS6=1
+                OK ATS7=30
+                OK ATS8=1
+                OK AT$F=1
+                OK AT+PSS=1
+                OK AT-QCPS=1
+                OK ATX0
+                OK AT+IPR={self.baud}
+                OK AT&W
+                OK ATDT{self.phone_number}
+                CONNECT ""
         """
         with open(self.pppd_path + "chat-script", "w") as f:
             f.write(script_content.strip())
@@ -98,6 +109,10 @@ class PPPDialer:
             f.write(dial_out_content.strip())
 
     def dial_in(self, server_ip="192.168.10.100", port=12345):
+        logging.info("Start Checking dependencies")
+        subprocess.run(["python3", "check_dependencies.py"])
+        logging.info("Finish Checking dependencies")
+
         logging.info("Start dial in setup configs")
         self.dial_in_setup_configs()
         logging.info("Finish dial in setup configs")
