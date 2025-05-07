@@ -56,12 +56,21 @@ if __name__ == "__main__":
         # Dial and establish PPP connection,Get a socket for communication
         client_sock, server_sock = dialer.dial_in()
 
-        with open("data.txt", "w") as file:
-            while True:
-                data = client_sock.recv(1024)
-                if not data:
-                    break
-                file.write(data.decode().strip())
+        # Receive file size
+        size = client_sock.recv(16).decode().strip()
+        size = int(size)
+
+        # Receive PDF data
+        data = b''
+        while len(data) < size:
+            packet = client_sock.recv(size - len(data))
+            if not packet:
+                break
+            data += packet
+
+        # Save received PDF
+        with open('data.pdf', 'wb') as f:
+            f.write(data)
 
     except Exception as e:
         print(f"Error: {e}")

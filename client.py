@@ -7,9 +7,16 @@ if __name__ == "__main__":
         sock = dialer.dial_out()
 
         # Use the socket to send data
-        message = "Hello over PPP from the library!"
-        sock.send(message.encode())
-        print(f"Sent: {message}")
+        # Read PDF file
+        with open('data.pdf', 'rb') as f:  # Replace with your PDF path
+            data = f.read()
+
+        # Send file size first
+        sock.send(str(len(data)).encode().ljust(16))
+
+        # Send PDF data
+        sock.sendall(data)
+        print("Sent PDF File.")
 
     except Exception as e:
         print(f"Error: {e}")
