@@ -2,9 +2,9 @@ import os
 import socket
 import sys
 import logging
+from datetime import datetime
 
 from dial import PPPDialer
-
 
 # def setup_logging(log_file="/var/log/dial.log"):
 #     logging.basicConfig(
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     try:
         # Dial and establish PPP connection,Get a socket for communication
         client_sock, server_sock = dialer.dial_in()
-
+        print(f"Start receiving data at {datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}")
         # Receive file size
         size = client_sock.recv(16).decode().strip()
         size = int(size)
@@ -78,6 +78,6 @@ if __name__ == "__main__":
         client_sock.close()
         server_sock.close()
         os.system("killall pppd")
-        print("Server closed")
+        print(f"Server closed {datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}")
         # Clean up
         dialer.close()

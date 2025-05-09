@@ -1,10 +1,12 @@
 from dial import PPPDialer
+from datetime import datetime
 
 if __name__ == "__main__":
     dialer = PPPDialer()
     try:
         # Dial and establish PPP connection,Get a socket for communication
         sock = dialer.dial_out()
+        print(f"Start sending PDF File.{datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}")
 
         # Use the socket to send data
         # Read PDF file
@@ -16,7 +18,7 @@ if __name__ == "__main__":
 
         # Send PDF data
         sock.sendall(data)
-        print("Sent PDF File.")
+        print(f"Sent PDF File.{datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}")
 
     except Exception as e:
         print(f"Error: {e}")
