@@ -181,3 +181,14 @@ class PPPDialer:
     def __del__(self):
         """Ensure cleanup on object destruction."""
         self.close()
+
+
+def get_socket(phone_number=db.phone_number):
+    dialer = PPPDialer(phone_number=phone_number)
+    # Dial and establish PPP connection
+    dialer.dial_out()
+
+    # Get a socket for communication
+    sock = dialer.get_socket(port=12345)
+
+    return sock

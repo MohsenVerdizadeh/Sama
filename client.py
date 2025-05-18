@@ -1,3 +1,5 @@
+import time
+
 from dial import PPPDialer
 from datetime import datetime
 
@@ -6,7 +8,7 @@ if __name__ == "__main__":
     try:
         # Dial and establish PPP connection,Get a socket for communication
         sock = dialer.dial_out()
-        print(f"Start sending PDF File.{datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}")
+        start_time = time.time()
 
         # Use the socket to send data
         # Read PDF file
@@ -18,7 +20,8 @@ if __name__ == "__main__":
 
         # Send PDF data
         sock.sendall(data)
-        print(f"Sent PDF File.{datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}")
+        end_time = time.time()
+        print(f"Transfer Rate: {1.7 / (end_time - start_time)} KBps")
 
     except Exception as e:
         print(f"Error: {e}")
